@@ -1,139 +1,169 @@
 # TrustStay 🏠🔒
 
-**Decentralized, trustless Airbnb-style rental platform on Ethereum (Base L2)**
+**Production-grade decentralized short-term rental protocol on Base (Ethereum L2)**
 
-Worldwide secure home rentals with:
-- Trustless escrow (no scams for guest or host)
-- On-chain availability & bookings
-- Ultra-low fees (Base L2)
-- Crypto payments + ARS on-ramp support
-- Built-in swaps (USDC / ETH / stablecoins)
-- Reputation Points system
-- AI Agents with automatic translation
-- Fully EVM compatible
+> Trustless escrow · On-chain availability · Soulbound reputation · Ultra-low fees · Worldwide
 
-> Security-first • Gas-efficient • Production-grade architecture
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Solidity](https://img.shields.io/badge/Solidity-0.8.24-363636)](https://soliditylang.org)
+[![Foundry](https://img.shields.io/badge/Built%20with-Foundry-FFDB1C)](https://getfoundry.sh)
+[![Next.js](https://img.shields.io/badge/Frontend-Next.js%2015-black)](https://nextjs.org)
 
-## Why TrustStay solves the global problem
+---
 
-Traditional platforms (Airbnb, Booking) take high fees (15-20%), have slow disputes, currency friction, and centralized control. Scams still happen. TrustStay uses smart contracts so:
+## Why TrustStay
 
-1. **Money is locked in escrow** until both parties confirm (or time + dispute window).
-2. **Double-booking is impossible** (on-chain calendar).
-3. **Reputation is on-chain** and portable.
-4. **Fees are minimal** (protocol can take 1-3%).
-5. **Works worldwide** with any EVM wallet.
-6. **No single point of failure**.
+Traditional platforms charge 15-20%, resolve disputes slowly, and still allow scams. TrustStay replaces the trusted middleman with **smart contracts**:
 
-### Important Legal & Compliance Note
+| Problem | TrustStay solution |
+|---------|--------------------|
+| Guest pays and host disappears | Funds locked in escrow until both confirm |
+| Host accepts then cancels late | Guest is fully refunded if host cancels before check-in |
+| Double booking | On-chain occupancy calendar makes it impossible |
+| Fake reviews / no reputation | Soulbound Reputation Points (non-transferable) |
+| High fees & currency friction | Base L2 (cents) + USDC + ready for ARS ramps |
 
-Smart contracts handle **payment escrow and commitments**. Physical access to properties, local housing laws, taxes, consumer protection, and fiat on/off-ramps are **still subject to the laws of each country**.  
+**Legal note**: The protocol is a pure P2P tool. Physical access, local housing laws, taxes and fiat ramps remain subject to each jurisdiction. Consult counsel before operating commercially.
 
-This protocol is designed as a pure P2P tool. The platform does **not** custody funds outside of transparent, user-controlled escrow contracts.  
+---
 
-**You must consult local counsel** before operating as a commercial marketplace, collecting fees, or integrating fiat ramps in any jurisdiction (especially Argentina for ARS). Pure crypto P2P between two parties has fewer barriers, but any service layer can trigger regulations.
+## Architecture
 
-## Architecture (Recommended Production Stack)
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  Next.js App    │────▶│  ListingRegistry │     │ ReputationPoints│
+│  (Vercel)       │     │  (on-chain)      │     │ (soulbound)     │
+│  RainbowKit     │     └────────┬─────────┘     └────────▲────────┘
+│  wagmi + viem   │              │                        │
+└────────┬────────┘              ▼                        │
+         │              ┌──────────────────┐              │
+         └─────────────▶│  BookingEscrow   │──────────────┘
+                        │  USDC locked     │
+                        │  occupancy map   │
+                        │  dual confirm    │
+                        └──────────────────┘
+```
 
-| Layer | Technology | Reason |
-|-------|------------|--------|
-| Chain | **Base** (Ethereum L2) | Extremely low gas, EVM, Coinbase ecosystem (good for LatAm ramps), security of Ethereum |
-| Tokens | USDC (primary), ETH, other stables | Stable pricing for rentals |
-| Contracts | Solidity 0.8.24 + OpenZeppelin + Foundry | Security standards, gas optimized |
-| Escrow | Custom BookingEscrow + ListingRegistry | Prevents scams, double booking |
-| Reputation | Soulbound Points / ERC-721 or ERC-20 with transfer restrictions | Incentivizes good behavior |
-| Frontend | Next.js 15 + Tailwind + shadcn/ui + wagmi v2 + viem + RainbowKit | Modern, type-safe, wallet UX |
-| Metadata | IPFS (Pinata / web3.storage) | Property photos & descriptions |
-| AI Agents | Off-chain (Grok / OpenAI compatible) + on-chain triggers | Translation + booking assistant |
-| Swaps | Uniswap V3 on Base | Instant conversion |
-| Account Abstraction | Optional (Base Account / Safe) | Gasless UX for newcomers |
+- **Chain**: Base (primary) / Base Sepolia (test)
+- **Token**: USDC (6 decimals)
+- **Contracts**: Solidity 0.8.24 + OpenZeppelin + Foundry
+- **Frontend**: Next.js 15 App Router, Tailwind, RainbowKit, wagmi v2
 
-### Core Smart Contract Flow
+---
 
-1. **Host** creates Listing (price per night in USDC, max guests, location hash, IPFS CID, availability windows).
-2. **Guest** selects dates → contract checks availability → Guest deposits full amount + small security deposit into Escrow.
-3. Host accepts (or auto-accept).
-4. During stay: optional check-in / check-out signatures or photos.
-5. After end date + dispute window (e.g. 48h):
-   - Both confirm → funds released to Host, deposit returned to Guest.
-   - Dispute → funds held for arbitration (Kleros or multi-sig committee in v1).
-6. Both parties earn/lose Reputation Points based on outcome.
-
-## Project Structure
+## Repository structure
 
 ```
 truststay/
-├── contracts/          # Foundry project
+├── contracts/               # Foundry project
 │   ├── src/
 │   │   ├── ListingRegistry.sol
 │   │   ├── BookingEscrow.sol
 │   │   └── ReputationPoints.sol
-│   ├── test/
-│   └── script/
-├── frontend/           # Next.js App Router
-│   ├── app/
+│   ├── test/BookingEscrow.t.sol
+│   ├── script/Deploy.s.sol
+│   ├── foundry.toml
+│   └── remappings.txt
+├── frontend/                # Next.js app
+│   ├── app/                 # pages: /, /explore, /list, /listing/[id], /dashboard
 │   ├── components/
-│   └── lib/
-├── docs/
+│   └── lib/                 # wagmi, contracts ABIs, mock data
+├── docs/ARCHITECTURE.md
 └── README.md
 ```
 
-## Quick Start (Development)
+---
 
-### 1. Contracts (Foundry)
+## Quick start
+
+### 1. Contracts
 
 ```bash
 cd contracts
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+
 forge install OpenZeppelin/openzeppelin-contracts --no-commit
+forge install foundry-rs/forge-std --no-commit
+
 forge build
-forge test
+forge test -vv
 ```
 
-Deploy to Base Sepolia (testnet):
+Deploy (Base Sepolia example):
 
 ```bash
-forge script script/Deploy.s.sol --rpc-url $BASE_SEPOLIA_RPC --broadcast --verify
+# .env
+PRIVATE_KEY=0x...
+USDC_ADDRESS=0x...          # Base Sepolia USDC or mock
+BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
+BASESCAN_API_KEY=...
+
+forge script script/Deploy.s.sol \
+  --rpc-url $BASE_SEPOLIA_RPC_URL \
+  --broadcast \
+  --verify
 ```
+
+Copy the three addresses into `frontend/lib/contracts.ts`.
 
 ### 2. Frontend
 
 ```bash
 cd frontend
 npm install
+
 cp .env.example .env.local
-# Fill NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID, contract addresses, etc.
+# Set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID (get free at https://cloud.walletconnect.com)
+# Optionally set contract addresses
+
 npm run dev
+# → http://localhost:3000
 ```
 
-### 3. Production Deploy
+### 3. Production frontend (Vercel)
 
-- Contracts → Base mainnet (after audit)
-- Frontend → Vercel (this repo is already set up for it)
-
-## Roadmap to Production
-
-1. **MVP (this repo)** – Core escrow + registry + basic UI + wallet
-2. **v1** – Full calendar, IPFS, reputation, basic AI translator
-3. **v1.5** – Uniswap swaps, ARS ramp partner integration, smart lock integration
-4. **v2** – Account Abstraction, Kleros disputes, mobile PWA, multi-chain (Arbitrum, Optimism)
-5. **Audit** → Trail of Bits / OpenZeppelin / Spearbit before mainnet funds
-
-## Security Principles Applied
-
-- Checks-Effects-Interactions
-- ReentrancyGuard on all value transfers
-- Access control with Ownable2Step / Roles
-- No unbounded loops
-- Explicit integer safety (Solidity 0.8+)
-- Pull-over-push for withdrawals where possible
-- Time-locks and dispute windows
-- Comprehensive Foundry tests + fuzzing recommended
-
-## License
-
-MIT (contracts + frontend). Use responsibly.
+1. Import `srbisnes/truststay` in Vercel
+2. Root Directory = `frontend`
+3. Framework = Next.js
+4. Add env var `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`
+5. Deploy
 
 ---
 
-Built with Security First mindset for institutional-grade Web3.
-Contact the architect for private audit / custom features.
+## Core security model
+
+- **ReentrancyGuard** on every value-moving function
+- **SafeERC20** for all USDC transfers
+- Occupancy mapping prevents double-booking at protocol level
+- Funds only leave escrow when:
+  - Both guest **and** host call `confirmStay`, or
+  - `finalizeBooking` is called after `checkOut + disputeWindow`
+- Host can cancel **before** check-in → full refund
+- Protocol fee hard-capped at 5% in code (default 1.5%)
+- Reputation is soulbound (transfers revert)
+
+Recommended before mainnet: professional audit (Trail of Bits / OpenZeppelin / Spearbit) + full Foundry fuzz suite.
+
+---
+
+## Roadmap
+
+- [x] Core escrow + registry + reputation
+- [x] Full Foundry tests
+- [x] Production frontend (explore / list / book / dashboard)
+- [ ] Real IPFS upload (Pinata / web3.storage)
+- [ ] Uniswap V3 swaps in-app
+- [ ] ARS / fiat on-ramp partner
+- [ ] AI translator agent (guest ↔ host)
+- [ ] Account Abstraction (gasless)
+- [ ] Kleros (or similar) dispute resolution
+- [ ] Mainnet audit + launch
+
+---
+
+## License
+
+MIT
+
+Built with a security-first, institutional-grade mindset.
