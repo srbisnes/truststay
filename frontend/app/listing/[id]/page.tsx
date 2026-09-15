@@ -1,6 +1,7 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
+import { useParams } from "next/navigation";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Star, Users, Shield, Calendar, ArrowLeft } from "lucide-react";
@@ -8,10 +9,12 @@ import Link from "next/link";
 import { MOCK_LISTINGS } from "@/lib/mock-data";
 import { SwapPanel } from "@/components/SwapPanel";
 
-export default function ListingPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ListingPage() {
+  const params = useParams();
+  const id = String(params?.id ?? "");
   const listing = MOCK_LISTINGS.find((l) => l.id === Number(id));
   const { isConnected } = useAccount();
+
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [showSwap, setShowSwap] = useState(false);
@@ -29,9 +32,10 @@ export default function ListingPage({ params }: { params: Promise<{ id: string }
     );
   }
 
-  const nights = checkIn && checkOut
-    ? Math.max(1, Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000))
-    : 0;
+  const nights =
+    checkIn && checkOut
+      ? Math.max(1, Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000))
+      : 0;
   const total = nights * listing.pricePerNight + listing.deposit;
 
   async function handleBook() {
@@ -42,10 +46,10 @@ export default function ListingPage({ params }: { params: Promise<{ id: string }
       return;
     }
     setStatus("loading");
-    setMessage("Approving USDC + creating escrow booking…");
-    await new Promise((r) => setTimeout(r, 1800));
+    setMessage("Creating escrow booking…");
+    await new Promise((r) => setTimeout(r, 1500));
     setStatus("success");
-    setMessage(`Booking simulated! ${nights} night(s) · ${total} USDC locked in escrow.`);
+    setMessage(`Booking confirmed (demo): ${nights} night(s) · ${total} USDC locked in escrow.`);
   }
 
   return (
@@ -56,7 +60,7 @@ export default function ListingPage({ params }: { params: Promise<{ id: string }
         </Link>
         <div className="grid lg:grid-cols-5 gap-10">
           <div className="lg:col-span-3 space-y-6">
-            <div className="aspect-[16/10] rounded-2xl overflow-hidden">
+            <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-slate-800">
               <img src={listing.image} alt={listing.title} className="w-full h-full object-cover" />
             </div>
             <div>
@@ -114,7 +118,7 @@ export default function ListingPage({ params }: { params: Promise<{ id: string }
                     <button type="button" onClick={() => setShowSwap((s) => !s)} className="w-full py-2 rounded-xl border border-white/15 hover:bg-white/5 text-sm text-slate-300">
                       {showSwap ? "Hide swap" : "Need USDC? Swap ETH → USDC"}
                     </button>
-                    <button onClick={handleBook} disabled={status === "loading"} className="w-full py-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 disabled:opacity-60 font-semibold transition flex items-center justify-center gap-2">
+                    <button type="button" onClick={handleBook} disabled={status === "loading"} className="w-full py-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 disabled:opacity-60 font-semibold transition flex items-center justify-center gap-2">
                       {status === "loading" ? "Processing…" : (<><Calendar className="w-4 h-4" /> Book with Escrow</>)}
                     </button>
                   </>
@@ -126,7 +130,7 @@ export default function ListingPage({ params }: { params: Promise<{ id: string }
                     : "bg-sky-500/10 text-sky-300 border border-sky-500/20"
                   }`}>{message}</p>
                 )}
-                <p className="text-xs text-slate-500 text-center">Funds stay in escrow until both confirm. Deposit returns automatically.</p>
+                <p className="text-xs text-slate-500 text-center">Funds stay in escrow until both parties confirm.</p>
               </div>
               {showSwap && <SwapPanel />}
             </div>
