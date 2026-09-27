@@ -1,169 +1,129 @@
-# TrustStay 🏠🔒
+# TrustStay 🏠🔐
 
-**Production-grade decentralized short-term rental protocol on Base (Ethereum L2)**
+## Global Trust Infrastructure for Onchain Rentals
 
-> Trustless escrow · On-chain availability · Soulbound reputation · Ultra-low fees · Worldwide
+TrustStay is a Web3-native rental infrastructure combining programmable escrow, stablecoin payments, verifiable reputation, identity primitives, AI-assisted coordination and EVM interoperability.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Solidity](https://img.shields.io/badge/Solidity-0.8.24-363636)](https://soliditylang.org)
-[![Foundry](https://img.shields.io/badge/Built%20with-Foundry-FFDB1C)](https://getfoundry.sh)
-[![Next.js](https://img.shields.io/badge/Frontend-Next.js%2015-black)](https://nextjs.org)
+> The product is not simply “Airbnb on blockchain”. TrustStay is designed as a programmable trust layer for global rentals.
 
----
+## Mission
 
-## Why TrustStay
+Global rentals require trust across identity, property, payment, reservation, reputation and disputes.
 
-Traditional platforms charge 15-20%, resolve disputes slowly, and still allow scams. TrustStay replaces the trusted middleman with **smart contracts**:
+TrustStay aims to make that trust layer programmable through smart-contract escrow, stablecoin settlement, EVM-compatible infrastructure, verifiable reputation, identity primitives, AI assistance, dispute evidence and future APIs.
 
-| Problem | TrustStay solution |
-|---------|--------------------|
-| Guest pays and host disappears | Funds locked in escrow until both confirm |
-| Host accepts then cancels late | Guest is fully refunded if host cancels before check-in |
-| Double booking | On-chain occupancy calendar makes it impossible |
-| Fake reviews / no reputation | Soulbound Reputation Points (non-transferable) |
-| High fees & currency friction | Base L2 (cents) + USDC + ready for ARS ramps |
+## Grant: USD 35,000
 
-**Legal note**: The protocol is a pure P2P tool. Physical access, local housing laws, taxes and fiat ramps remain subject to each jurisdiction. Consult counsel before operating commercially.
+The grant funds a concentrated three-month acceleration phase followed by an 18-month validation and ecosystem roadmap. A substantial amount of product design, architecture and conceptual work has already been completed. The grant therefore accelerates execution rather than funding an idea from zero.
 
----
+| Category | USD |
+|---|---:|
+| 5 specialist contributors / 3 months | 18,000 |
+| Security, audits & testing | 4,500 |
+| Infrastructure, APIs & AI | 3,000 |
+| Product / UX | 2,500 |
+| Growth & ecosystem | 2,500 |
+| Legal / compliance / documentation | 1,500 |
+| Events / ecosystem activities | 1,000 |
+| Contingency | 1,000 |
+| **Total** | **35,000** |
+
+Five specialists cover Web3/Solidity, full-stack, AI, product/UX and growth/ecosystem. Their compensation covers three months of intensive execution. The model is milestone-based rather than a large permanent corporate structure.
+
+## Product
+
+- Authentication and onboarding
+- Google/social login where supported
+- Wallet connection
+- Host and guest profiles
+- Listings and search
+- Availability and reservations
+- USDC escrow
+- Reputation
+- Disputes
+- AI assistance
+- Analytics
+- Security monitoring
+- Future APIs and EVM integrations
 
 ## Architecture
 
-```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  Next.js App    │────▶│  ListingRegistry │     │ ReputationPoints│
-│  (Vercel)       │     │  (on-chain)      │     │ (soulbound)     │
-│  RainbowKit     │     └────────┬─────────┘     └────────▲────────┘
-│  wagmi + viem   │              │                        │
-└────────┬────────┘              ▼                        │
-         │              ┌──────────────────┐              │
-         └─────────────▶│  BookingEscrow   │──────────────┘
-                        │  USDC locked     │
-                        │  occupancy map   │
-                        │  dual confirm    │
-                        └──────────────────┘
-```
+Frontend → Application Layer → Identity / Payments / Reputation → Escrow → Reservations → AI / Disputes / Evidence → Base / EVM → Wallets / dApps / Partners
 
-- **Chain**: Base (primary) / Base Sepolia (test)
-- **Token**: USDC (6 decimals)
-- **Contracts**: Solidity 0.8.24 + OpenZeppelin + Foundry
-- **Frontend**: Next.js 15 App Router, Tailwind, RainbowKit, wagmi v2
+Initial stack: Next.js/React, Supabase/PostgreSQL where applicable, Solidity 0.8.24, Foundry, OpenZeppelin, Base/Base Sepolia and USDC.
 
----
+## Security
 
-## Repository structure
+Security is continuous: automated tests, fuzzing, invariants, static analysis, external review, bug bounty, monitoring and incident response. TrustStay will not claim “100% secure”. Production handling of meaningful user funds requires documented security gates and independent review.
 
-```
-truststay/
-├── contracts/               # Foundry project
-│   ├── src/
-│   │   ├── ListingRegistry.sol
-│   │   ├── BookingEscrow.sol
-│   │   └── ReputationPoints.sol
-│   ├── test/BookingEscrow.t.sol
-│   ├── script/Deploy.s.sol
-│   ├── foundry.toml
-│   └── remappings.txt
-├── frontend/                # Next.js app
-│   ├── app/                 # pages: /, /explore, /list, /listing/[id], /dashboard
-│   ├── components/
-│   └── lib/                 # wagmi, contracts ABIs, mock data
-├── docs/ARCHITECTURE.md
-└── README.md
-```
+## 18-month roadmap
 
----
+### Months 1–3 — ACCELERATE
+Complete core UX, authentication, wallets, listings, search, booking, escrow, USDC, reputation foundation, AI foundation, testing and deployment.
 
-## Quick start
+### Months 4–6 — PRIVATE BETA
+Initial hosts and users, controlled reservations, escrow tests, UX iteration and support workflows.
 
-### 1. Contracts
+### Months 7–9 — PUBLIC BETA
+AI assistant, translation, identity/verification primitives, reputation, disputes, analytics and stablecoin UX.
 
-```bash
-cd contracts
-curl -L https://foundry.paradigm.xyz | bash
-foundryup
+### Months 10–12 — VALIDATION
+Target milestones: 1,000 registered users, 100 active hosts, 500 listings and USD 50,000 reservation volume, plus public beta, security review, operational AI and on-chain reputation.
 
-forge install OpenZeppelin/openzeppelin-contracts --no-commit
-forge install foundry-rs/forge-std --no-commit
+### Months 13–15 — MONETIZATION
+Test an optional Host Pro subscription at USD 10/month with advanced analytics, AI tools, automation and host management.
 
-forge build
-forge test -vv
-```
+### Months 16–18 — ECOSYSTEM
+APIs, developer documentation, wallet/payment/identity integrations, partner development, security bounty and EVM expansion evaluation.
 
-Deploy (Base Sepolia example):
+## EVM strategy
 
-```bash
-# .env
-PRIVATE_KEY=0x...
-USDC_ADDRESS=0x...          # Base Sepolia USDC or mock
-BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
-BASESCAN_API_KEY=...
+TrustStay is Base-first and EVM-compatible. Starting with one primary environment reduces fragmentation during validation. The long-term goal is interoperability with wallets, stablecoin providers, identity systems, travel communities, insurance providers, other rental applications and developer platforms.
 
-forge script script/Deploy.s.sol \
-  --rpc-url $BASE_SEPOLIA_RPC_URL \
-  --broadcast \
-  --verify
-```
+The objective is not to force users to migrate. The objective is to make TrustStay infrastructure usable by applications and users across compatible EVM ecosystems.
 
-Copy the three addresses into `frontend/lib/contracts.ts`.
+## AI
 
-### 2. Frontend
+AI can assist guests with discovery, planning, translation and booking; hosts with listing generation, communication and automation; and operations with moderation, anomaly detection and risk signals. Critical production, security and legal decisions remain subject to human review.
 
-```bash
-cd frontend
-npm install
+## Community and distribution
 
-cp .env.example .env.local
-# Set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID (get free at https://cloud.walletconnect.com)
-# Optionally set contract addresses
+TrustStay began being publicly demonstrated approximately one month before this funding stage. The strategy combines build-in-public content, product demos, Web3 events, hackathons, community, host outreach and ecosystem partnerships.
 
-npm run dev
-# → http://localhost:3000
-```
+Visibility is not treated as proof of product-market fit. The project will measure qualified leads, registrations, active hosts, bookings, partner conversations and conversion.
 
-### 3. Production frontend (Vercel)
+The founder's Argentine Web3/hackathon network can also provide access to specialist contributors, testers and ecosystem contacts.
 
-1. Import `srbisnes/truststay` in Vercel
-2. Root Directory = `frontend`
-3. Framework = Next.js
-4. Add env var `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`
-5. Deploy
+## Sustainability
 
----
+The USD 35,000 grant is catalytic. If adoption grows, recurring resources will be required for technical maintenance, developers, infrastructure, RPC/indexing, AI, security, audits, bug bounty, support, compliance, legal work, community and ecosystem development.
 
-## Core security model
+Grant → Build → Validate → Adoption → Revenue → Recurring revenue → Strategic funding/partnerships → Sustainable operations.
 
-- **ReentrancyGuard** on every value-moving function
-- **SafeERC20** for all USDC transfers
-- Occupancy mapping prevents double-booking at protocol level
-- Funds only leave escrow when:
-  - Both guest **and** host call `confirmStay`, or
-  - `finalizeBooking` is called after `checkOut + disputeWindow`
-- Host can cancel **before** check-in → full refund
-- Protocol fee hard-capped at 5% in code (default 1.5%)
-- Reputation is soulbound (transfers revert)
+## Future economics
 
-Recommended before mainnet: professional audit (Trail of Bits / OpenZeppelin / Spearbit) + full Foundry fuzz suite.
+A token is not required for the MVP and is not assumed as an initial funding mechanism. A future token would require demonstrated utility, product usage, sustainable economics and legal/security analysis.
 
----
+Potential utility NFTs may focus on membership, loyalty, partner benefits, verified experiences or access rather than promised financial returns.
 
-## Roadmap
+## Development standards
 
-- [x] Core escrow + registry + reputation
-- [x] Full Foundry tests
-- [x] Production frontend (explore / list / book / dashboard)
-- [ ] Real IPFS upload (Pinata / web3.storage)
-- [ ] Uniswap V3 swaps in-app
-- [ ] ARS / fiat on-ramp partner
-- [ ] AI translator agent (guest ↔ host)
-- [ ] Account Abstraction (gasless)
-- [ ] Kleros (or similar) dispute resolution
-- [ ] Mainnet audit + launch
+Behavioral changes should follow RED → GREEN → REFACTOR → INTEGRATION → SECURITY → DEPLOY. Releases require fresh test, build and deployment verification.
 
----
+## Repository
 
-## License
+- contracts/
+- frontend/
+- docs/
+- tests/
+- scripts/
 
-MIT
+See docs/GRANT_PROPOSAL.md, docs/ROADMAP.md, docs/SECURITY.md, docs/ECONOMICS.md and docs/ECOSYSTEM.md.
 
-Built with a security-first, institutional-grade mindset.
+## Legal
+
+TrustStay is a technology project. Commercial operation requires jurisdiction-specific review of rentals, payments, consumer protection, taxation, identity and financial regulation.
+
+## Vision
+
+> Build the trust layer that allows global rental commerce to become programmable, interoperable and more transparent.
